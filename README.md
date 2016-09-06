@@ -8,4 +8,4 @@ Then run the bot with `python3 bot.py`.
 
 You'll also need the latest version of python-telegram-bot installed:
 
-    pip install python-telegram-bot
+    pip3 install python-telegram-bot
