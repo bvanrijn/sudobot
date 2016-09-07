@@ -64,7 +64,14 @@ def start(bot, update):
 
 def execute(bot, update, direct=True):
     print(update)
-    if update.message.from_user.id or update.from_user.id == int(config['ADMIN']['id']):
+    print(dir(update))
+    try:
+        user_id = update.message.from_user.id
+    except AttributeError:
+        # Using inline
+        user_id = update.inline_query.from_user.id
+
+    if user_id == int(config['ADMIN']['id']):
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.TYPING)
         output = subprocess.Popen(
