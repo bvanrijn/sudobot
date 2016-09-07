@@ -63,37 +63,43 @@ def start(bot, update):
 
 
 def execute(bot, update, direct=True):
-    print(update)
-    print(dir(update))
+
     try:
         user_id = update.message.from_user.id
+        command = update.message.text
+        inline = False
     except AttributeError:
         # Using inline
         user_id = update.inline_query.from_user.id
+        command = update.inline_query.query
+        inline = True
 
     if user_id == int(config['ADMIN']['id']):
-        bot.sendChatAction(chat_id=update.message.chat_id,
-                           action=ChatAction.TYPING)
-        output = subprocess.Popen(
-            update.message.text, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if not inline:
+            bot.sendChatAction(chat_id=update.message.chat_id,
+                               action=ChatAction.TYPING)
+        output = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output = output.stdout.read().decode('utf-8')
         output = '`{0}`'.format(output)
-        if direct:
+
+        if not inline:
             bot.sendMessage(chat_id=update.message.chat_id,
                         text=output, parse_mode="Markdown")
             return False
-        else:
-            print(update)
+
+        if inline:
             return output
 
 def inlinequery(bot, update):
     query = update.inline_query.query
+    o = execute(query, update, direct=False)
     results = list()
 
     results.append(InlineQueryResultArticle(id=uuid4(),
                                             title=query,
+                                            description=o,
                                             input_message_content=InputTextMessageContent(
-                                                execute(query, update, False),
+                                                '*{0}*\n\n{1}'.format(query, o),
                                                 parse_mode="Markdown")))
 
     bot.answerInlineQuery(update.inline_query.id, results=results)
