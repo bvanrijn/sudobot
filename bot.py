@@ -90,6 +90,7 @@ def execute(bot, update, direct=True):
         if inline:
             return output
 
+
 def inlinequery(bot, update):
     query = update.inline_query.query
     o = execute(query, update, direct=False)
@@ -102,7 +103,7 @@ def inlinequery(bot, update):
                                                 '*{0}*\n\n{1}'.format(query, o),
                                                 parse_mode="Markdown")))
 
-    bot.answerInlineQuery(update.inline_query.id, results=results)
+    bot.answerInlineQuery(update.inline_query.id, results=results, cache_time=10)
 
 
 start_handler = CommandHandler('start', start)
